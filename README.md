@@ -2,7 +2,7 @@
 
 이 저장소는 prabhatsharma 의 [kubernetes the hard way aws](https://github.com/prabhatsharma/kubernetes-the-hard-way-aws) 를 번역한 내용입니다. 또한 kelseyhightower 의 [kubernetes-the-hard-way](https://github.com/kelseyhightower/kubernetes-the-hard-way) 에서 gcp -> aws 로 변경된 가이드로 아래의 내용들이 추가 및 변경되었습니다.
 
-1. kubernetes to v1.11.2
+1. kubernetes to v1.11.3
 2. cri-tools to v1.11.1
 3. containerd to v1.2.0-beta.2
 4. CNI plugins to v0.7.1
@@ -27,7 +27,7 @@
 
 이 가이드는 RBAC(Role-based access control) 인증과 컴퍼넌트간의 end-to-end(E2E) 암호화를 통해 고가용성 쿠버네티스 클러스터를 부트스트래핑하는 과정을 설명하고 있습니다.
 
-* [Kubernetes](https://github.com/kubernetes/kubernetes) 1.11.2
+* [Kubernetes](https://github.com/kubernetes/kubernetes) 1.11.3
 * [containerd Container Runtime](https://github.com/containerd/containerd) 1.2.0-beta.2
 * [gVisor](https://github.com/google/gvisor) 08879266fef3a67fac1a77f1ea133c3ac75759dd
 * [CNI Container Networking](https://github.com/containernetworking/cni) 0.7.1
