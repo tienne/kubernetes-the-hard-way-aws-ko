@@ -1,6 +1,6 @@
 # 들어가기 앞서...
 
-이 저장소는 prabhatsharma 의 [kubernetes the hard way aws](https://github.com/prabhatsharma/kubernetes-the-hard-way-aws) 를 번역한 내용입니다. 또한 kelseyhightower 의 [kubernetes-the-hard-way](https://github.com/kelseyhightower/kubernetes-the-hard-way) 에서 gcp -> aws 로 변경된 가이드로 아래의 내용들이 추가 및 변경되었습니다.
+이 저장소는 prabhatsharma 의 [kubernetes the hard way aws](https://github.com/prabhatsharma/kubernetes-the-hard-way-aws) 를 번역 및 참고한 내용입니다. 또한 kelseyhightower 의 [kubernetes-the-hard-way](https://github.com/kelseyhightower/kubernetes-the-hard-way) 에서 gcp -> aws 로 변경된 가이드로 아래의 내용들이 추가 및 변경되었습니다.
 
 1. kubernetes to v1.11.3
 2. cri-tools to v1.11.1
@@ -15,7 +15,7 @@
 
 이 가이드는 kubernetes 를 자동화된 설치 방법이 아닌 하나하나 수동으로 설치하는 방법을 안내합니다. 만약 자동화된 방법으로 kubernetes 를 설치하는 방법을 알고 싶으시다면 [Google Kubernetes Engine](https://cloud.google.com/kubernetes-engine), [AWS Elastic Container Service for Kubernetes](https://aws.amazon.com/eks/) 혹은 [Getting Started Guides](http://kubernetes.io/docs/getting-started-guides/) 등을 참고하시기 바랍니다.
 
-쿠버네티스의 부트스트랩 하기 위한 과정들을 이해하기 위한 배움에 최적화 되어있는 가이드입니다.
+쿠버네티스의 부트스트랩 하기 위한 과정들을 이해하고 배우는데 최적화 되어있는 가이드입니다.
 
 > 이 가이드의 최종 결과물은 실서비스에 적합하지 않으며, 커뮤니티에 도움이 제한되지만 해당 가이드를 중단하지 않고 끝까지 학습하는걸 추천드립니다. 
 
@@ -33,7 +33,7 @@
 * [CNI Container Networking](https://github.com/containernetworking/cni) 0.7.1
 * [etcd](https://github.com/coreos/etcd) 3.3.9
 
-## Labs
+## 목차
 
 이 가이드는 [Amazon Web Service](https://aws.amazon.com/)에 접근 할 수 있다고 가정하고 진행합니다. 만약 GCP 버전의 가이드를 보고자 한다면 해당 가이드를 참고하세요. [https://github.com/kelseyhightower/kubernetes-the-hard-way](https://github.com/kelseyhightower/kubernetes-the-hard-way)
 

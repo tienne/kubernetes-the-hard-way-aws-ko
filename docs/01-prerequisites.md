@@ -29,4 +29,4 @@ AWS_REGION=ap-northeast-2
 aws configure set default.region $AWS_REGION
 ```
 
-다음순서: [Installing the Client Tools](02-client-tools.md)
+다음: [Installing the Client Tools](02-client-tools.md)
