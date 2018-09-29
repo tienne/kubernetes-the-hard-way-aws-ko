@@ -1,4 +1,4 @@
-# Prerequisites
+# 필수사항
 
 ## Amazon Web Services
 
@@ -8,7 +8,7 @@
 
 ## Amazon Web Services CLI
 
-### Install the AWS CLI
+### AWS CLI 설치
 
 AWS CLI [문서](https://aws.amazon.com/cli/)를 참고하여 `aws` command line 도구를 설치해주세요.  
 
@@ -24,9 +24,9 @@ aws --version
 
 아래의 명령어처럼 설정해주세요.
 
-```
+```bash
 AWS_REGION=ap-northeast-2
 aws configure set default.region $AWS_REGION
 ```
 
-다음: [Installing the Client Tools](02-client-tools.md)
+다음: [Client 도구들 설치](02-client-tools.md)

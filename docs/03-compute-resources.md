@@ -17,7 +17,7 @@ Kubernets [네트워킹 모델](https://kubernetes.io/docs/concepts/cluster-admi
 
 아래의 명령어를 통해 aws에 `kubernetes-the-hard-way` 사용자 정의 VPC 네트워크를 생성합니다.
 
-```sh
+```bash
 VPC_ID=$(aws ec2 create-vpc --cidr-block 10.240.0.0/24 --output text --query 'Vpc.VpcId')
 aws ec2 create-tags --resources ${VPC_ID} --tags Key=Name,Value=kubernetes-the-hard-way
 aws ec2 modify-vpc-attribute --vpc-id ${VPC_ID} --enable-dns-support '{"Value": true}'
@@ -30,7 +30,7 @@ aws ec2 modify-vpc-attribute --vpc-id ${VPC_ID} --enable-dns-hostnames '{"Value"
 
 아래의 명령어로 kubernetes-the-hard-way VPC 네트워크에의 서브넷을 생성합니다.
 
-```sh
+```bash
 SUBNET_ID=$(aws ec2 create-subnet \
   --vpc-id ${VPC_ID} \
   --cidr-block 10.240.0.0/24 \
@@ -40,9 +40,9 @@ aws ec2 create-tags --resources ${SUBNET_ID} --tags Key=Name,Value=kubernetes
 
 ### Internet Gateway
 
-생성한 VPC 외부 인터넷 트래픽을 제어할 Internet Gateway를 생성합니다.
+생성한 VPC 의 외부 인터넷 트래픽을 제어할 Internet Gateway 를 생성합니다.
  
-```sh
+```bash
 INTERNET_GATEWAY_ID=$(aws ec2 create-internet-gateway --output text --query 'InternetGateway.InternetGatewayId')
 aws ec2 create-tags --resources ${INTERNET_GATEWAY_ID} --tags Key=Name,Value=kubernetes
 aws ec2 attach-internet-gateway --internet-gateway-id ${INTERNET_GATEWAY_ID} --vpc-id ${VPC_ID}
@@ -52,7 +52,7 @@ aws ec2 attach-internet-gateway --internet-gateway-id ${INTERNET_GATEWAY_ID} --v
 
 Route table 를 생성하여 생성해둔 Internet Gateway 를 VPC 와 연결합니다.  
 
-```sh
+```bash
 ROUTE_TABLE_ID=$(aws ec2 create-route-table --vpc-id ${VPC_ID} --output text --query 'RouteTable.RouteTableId')
 aws ec2 create-tags --resources ${ROUTE_TABLE_ID} --tags Key=Name,Value=kubernetes
 aws ec2 associate-route-table --route-table-id ${ROUTE_TABLE_ID} --subnet-id ${SUBNET_ID}
@@ -63,7 +63,7 @@ aws ec2 create-route --route-table-id ${ROUTE_TABLE_ID} --destination-cidr-block
 
 아래의 명령어를 통하여 모든 VPC 내부에서 모든 프로토콜을 허용하는 방화벽 규칙을 생성합니다.
  
-```sh
+```bash
 SECURITY_GROUP_ID=$(aws ec2 create-security-group \
   --group-name kubernetes \
   --description "Kubernetes security group" \
@@ -76,7 +76,7 @@ aws ec2 authorize-security-group-ingress --group-id ${SECURITY_GROUP_ID} --proto
 
 SSH, ICMP 및 HTTPS를 허용하는 외부 방화벽 규칙을 만듭니다.
 
-```sh
+```bash
 aws ec2 authorize-security-group-ingress --group-id ${SECURITY_GROUP_ID} --protocol tcp --port 22 --cidr 0.0.0.0/0
 aws ec2 authorize-security-group-ingress --group-id ${SECURITY_GROUP_ID} --protocol tcp --port 6443 --cidr 0.0.0.0/0
 aws ec2 authorize-security-group-ingress --group-id ${SECURITY_GROUP_ID} --protocol icmp --port -1 --cidr 0.0.0.0/0
@@ -86,7 +86,7 @@ aws ec2 authorize-security-group-ingress --group-id ${SECURITY_GROUP_ID} --proto
 
 
 
-```sh
+```bash
 LOAD_BALANCER_ARN=$(aws elbv2 create-load-balancer \
   --name kubernetes \
   --subnets ${SUBNET_ID} \
@@ -109,7 +109,7 @@ aws elbv2 create-listener \
   --output text --query 'Listeners[].ListenerArn'
 ```
 
-```sh
+```bash
 KUBERNETES_PUBLIC_ADDRESS=$(aws elbv2 describe-load-balancers \
   --load-balancer-arns ${LOAD_BALANCER_ARN} \
   --output text --query 'LoadBalancers[].DNSName')
@@ -123,7 +123,7 @@ Kubernetes 클러스터들을 띄울때 사용할 AWS ami image ID를 조회합�
 
 저는 canonical 사(ubuntu 유통 회사)에서 제공하는 ubuntu 16.04 버전 AMI 이미지를 사용하겠습니다.
 
-```sh
+```bash
 IMAGE_ID=$(aws ec2 describe-images --owners 099720109477 \
   --filters \
   'Name=root-device-type,Values=ebs' \
@@ -136,7 +136,7 @@ IMAGE_ID=$(aws ec2 describe-images --owners 099720109477 \
 
 kubernetes 각 클러스터에 ssh 접속을 하기 위한 Key Pair 를 아래의 명령어를 통해 생성합니다.
 
-```sh
+```bash
 aws ec2 create-key-pair --key-name kubernetes --output text --query 'KeyMaterial' > kubernetes.id_rsa
 chmod 600 kubernetes.id_rsa
 ```
@@ -145,7 +145,7 @@ chmod 600 kubernetes.id_rsa
 
 `t2.micro` 타입의 인스턴스로 Kubernetes Master 3대를 생성합니다.
 
-```sh
+```bash
 for i in 0 1 2; do
   instance_id=$(aws ec2 run-instances \
     --associate-public-ip-address \
@@ -166,7 +166,7 @@ done
 
 ### Kubernetes Workers
 
-```sh
+```bash
 for i in 0 1 2; do
   instance_id=$(aws ec2 run-instances \
     --associate-public-ip-address \
