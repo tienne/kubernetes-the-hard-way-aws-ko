@@ -35,10 +35,11 @@
 
 ## 목차
 
-이 가이드는 [Amazon Web Service](https://aws.amazon.com/)에 접근 할 수 있다고 가정하고 진행합니다. 만약 GCP 버전의 가이드를 보고자 한다면 해당 가이드를 참고하세요. [https://github.com/kelseyhightower/kubernetes-the-hard-way](https://github.com/kelseyhightower/kubernetes-the-hard-way)
+이 가이드는 [Amazon Web Service](https://aws.amazon.com/)에 접근 할 수 있다고 가정하고 진행합니다.
+만약 GCP 버전의 가이드를 보고자 한다면 해당 가이드를 참고하세요. [https://github.com/kelseyhightower/kubernetes-the-hard-way](https://github.com/kelseyhightower/kubernetes-the-hard-way)
 
-* [Prerequisites](docs/01-prerequisites.md)
-* [Installing the Client Tools](docs/02-client-tools.md)
+* [필수사항](docs/01-prerequisites.md)
+* [Client 용 도구들 설치](docs/02-client-tools.md)
 * [Provisioning Compute Resources](docs/03-compute-resources.md)
 * [Provisioning the CA and Generating TLS Certificates](docs/04-certificate-authority.md)
 * [Generating Kubernetes Configuration Files for Authentication](docs/05-kubernetes-configuration-files.md)

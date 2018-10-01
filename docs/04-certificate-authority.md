@@ -48,7 +48,7 @@ EOF
 cfssl gencert -initca ca-csr.json | cfssljson -bare ca
 ```
 
-생성결과:
+실행결과:
 
 ```
 ca-key.pem
@@ -61,7 +61,7 @@ ca.pem
 
 ### Admin Client 인증서
 
-`admin` 클라이언트 인증서와 비공개 키를 생성합니다.
+`admin` 클라이언트용 인증서와 비공개 키를 생성합니다.
 
 ```bash
 cat > admin-csr.json <<EOF
@@ -91,7 +91,7 @@ cfssl gencert \
   admin-csr.json | cfssljson -bare admin
 ```
 
-생성결과:
+실행결과:
 
 ```
 admin-key.pem
@@ -100,9 +100,11 @@ admin.pem
 
 ### Kubelet Client 인증서
 
-Kubernetes uses a [special-purpose authorization mode](https://kubernetes.io/docs/admin/authorization/node/) called Node Authorizer, that specifically authorizes API requests made by [Kubelets](https://kubernetes.io/docs/concepts/overview/components/#kubelet). In order to be authorized by the Node Authorizer, Kubelets must use a credential that identifies them as being in the `system:nodes` group, with a username of `system:node:<nodeName>`. In this section you will create a certificate for each Kubernetes worker node that meets the Node Authorizer requirements.
+Kubernetes 는 Node Authorizer 라 불리는 [특수한 목적의 인증 방식](https://kubernetes.io/docs/admin/authorization/node/)를 사용하며, 이 인증 방식으로 [Kubelets](https://kubernetes.io/docs/concepts/overview/components/#kubelet) 에서 발송하는 API 요청들을 승인합니다.
+Node Authorizer 에게 권한을 부여 받기 위해 Kubelets 은 `system : nodes` 그룹에 속한 사용자인 `system : node : <nodeName>` 로 식별하는 인증서를 사용해야합니다.  
+이번 단계에서는 Node Authorizer 요구 사항을 충족하는 Kubernetes 각 Worker 노드에 대한 인증서를 생성합니다.  
 
-Generate a certificate and private key for each Kubernetes worker node:
+Kubernetes Worker 노드용 인증서 와 비공개 키 생성합니다.
 
 ```bash
 for i in 0 1 2; do
@@ -145,7 +147,7 @@ cfssl gencert \
 done
 ```
 
-Results:
+실행결과:
 
 ```
 worker-0-key.pem
@@ -156,9 +158,9 @@ worker-2-key.pem
 worker-2.pem
 ```
 
-### The Controller Manager Client Certificate
+### Controller Manager Client 인증서
 
-Generate the `kube-controller-manager` client certificate and private key:
+`kube-controller-manager` 클라이언트용 인증서와 비공개 키를 생성합니다.
 
 ```bash
 cat > kube-controller-manager-csr.json <<EOF
@@ -188,7 +190,7 @@ cfssl gencert \
   kube-controller-manager-csr.json | cfssljson -bare kube-controller-manager
 ```
 
-Results:
+실행결과:
 
 ```
 kube-controller-manager-key.pem
@@ -196,9 +198,9 @@ kube-controller-manager.pem
 ```
 
 
-### The Kube Proxy Client Certificate
+### Kube Proxy 클라이언트 인증서
 
-Generate the `kube-proxy` client certificate and private key:
+`kube-proxy` 클라이언트용 인증서와 비공개 키를 생성합니다.
 
 ```bash
 cat > kube-proxy-csr.json <<EOF
@@ -228,16 +230,16 @@ cfssl gencert \
   kube-proxy-csr.json | cfssljson -bare kube-proxy
 ```
 
-Results:
+결과물:
 
 ```
 kube-proxy-key.pem
 kube-proxy.pem
 ```
 
-### The Scheduler Client Certificate
+### Scheduler 클라이언트 인증서
 
-Generate the `kube-scheduler` client certificate and private key:
+`kube-scheduler` 클라이언트용 인증서와 비공개 키를 생성합니다.
 
 ```bash
 cat > kube-scheduler-csr.json <<EOF
@@ -268,7 +270,7 @@ cfssl gencert \
 
 ```
 
-Results:
+실행결과:
 
 ```
 kube-scheduler-key.pem
@@ -276,9 +278,14 @@ kube-scheduler.pem
 ```
 
 
-### The Kubernetes API Server Certificate
+### Kubernetes API Server 인증서
 
-The `kubernetes-the-hard-way` static IP address will be included in the list of subject alternative names for the Kubernetes API Server certificate. This will ensure the certificate can be validated by remote clients.
+`kubernetes-the-hard-way` 은 고정 IP 주소
+
+Kubernetes API Server 용 인증서와 비공개 키를 생성합니다.
+
+The `kubernetes-the-hard-way` static IP address will be included in the list of subject alternative names for the Kubernetes API Server certificate. 
+This will ensure the certificate can be validated by remote clients.
 
 Generate the Kubernetes API Server certificate and private key:
 
@@ -311,14 +318,14 @@ cfssl gencert \
   kubernetes-csr.json | cfssljson -bare kubernetes
 ```
 
-Results:
+실행결과:
 
 ```
 kubernetes-key.pem
 kubernetes.pem
 ```
 
-## The Service Account Key Pair
+## 서비스 계정 Key Pair
 
 The Kubernetes Controller Manager leverages a key pair to generate and sign service account tokens as describe in the [managing service accounts](https://kubernetes.io/docs/admin/service-accounts-admin/) documentation.
 
