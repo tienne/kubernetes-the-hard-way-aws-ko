@@ -280,14 +280,10 @@ kube-scheduler.pem
 
 ### Kubernetes API Server 인증서
 
-`kubernetes-the-hard-way` 은 고정 IP 주소
+Kubernetes API 용 인증서에는 `kubernetes-the-hard-way` 라는 이름의 고정 IP 주소가 포함됩니다.
+이를 통하여 원격 클라이언트들의 인증서를 검증할 수 있습니다.
 
 Kubernetes API Server 용 인증서와 비공개 키를 생성합니다.
-
-The `kubernetes-the-hard-way` static IP address will be included in the list of subject alternative names for the Kubernetes API Server certificate. 
-This will ensure the certificate can be validated by remote clients.
-
-Generate the Kubernetes API Server certificate and private key:
 
 ```bash
 cat > kubernetes-csr.json <<EOF
@@ -327,9 +323,9 @@ kubernetes.pem
 
 ## 서비스 계정 Key Pair
 
-The Kubernetes Controller Manager leverages a key pair to generate and sign service account tokens as describe in the [managing service accounts](https://kubernetes.io/docs/admin/service-accounts-admin/) documentation.
+쿠버네티스 컨트롤 매니저는 한쌍의 키를 이용하여 [managing service accounts](https://kubernetes.io/docs/admin/service-accounts-admin/) 라는 쿠버네티스 매뉴얼의 내용처럼 서비스 계정 토큰을 생성하고 서명합니다. 
 
-Generate the `service-account` certificate and private key:
+`service-account` 인증서와 비공개 키를 생성합니다.
 
 ```bash
 cat > service-account-csr.json <<EOF
@@ -360,7 +356,7 @@ cfssl gencert \
 
 ```
 
-Results:
+실행결과:
 
 ```
 service-account-key.pem
@@ -368,9 +364,9 @@ service-account.pem
 ```
 
 
-## Distribute the Client and Server Certificates
+## 클라이언트 및 서버 인증서 배포
 
-Copy the appropriate certificates and private keys to each worker instance:
+생성했던 인증서와 비공개키들을 각 worker 인스턴스안에 복사하여 넣어줍니다.  
 
 ```bash
 for instance in worker-0 worker-1 worker-2; do
@@ -382,10 +378,10 @@ for instance in worker-0 worker-1 worker-2; do
 done
 ```
 
-Copy the appropriate certificates and private keys to each controller instance:
+마찬가지로 master 인스턴스 안에도 생성했던 인증서와 비공개키들을 복사하여 넣어줍니다.
 
 ```bash
-for instance in controller-0 controller-1 controller-2; do
+for instance in master-0 master-1 master-2; do
   external_ip=$(aws ec2 describe-instances \
     --filters "Name=tag:Name,Values=${instance}" \
     --output text --query 'Reservations[].Instances[].PublicIpAddress')
@@ -396,6 +392,6 @@ for instance in controller-0 controller-1 controller-2; do
 done
 ```
 
-> The `kube-proxy`, `kube-controller-manager`, `kube-scheduler`, and `kubelet` client certificates will be used to generate client authentication configuration files in the next lab.
+> 다음 단계에서는 `kube-proxy`, `kube-controller-manager`, `kube-scheduler`, 그리고 `kubelet` 클라이언트 인증서들을 이용하여 클라이언트 인증 설정파일을 생성합니다.
 
-Next: [Generating Kubernetes Configuration Files for Authentication](05-kubernetes-configuration-files.md)
+다음: [Kubernetes 인증 처리를 위한 설정 파일 생성](05-kubernetes-configuration-files.md)
