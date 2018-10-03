@@ -17,7 +17,7 @@ for instance in master-0 master-1 master-2; do
 done
 ```
 
-Now ssh into each one of the IP addresses received in last step
+이제 위의 명령어를 통해 출력된 IP를 이용하여 ssh 접속을 합니다.
 
 ```bash
 ssh -i kubernetes.id_rsa ubuntu@${위에 출력된 IP1}
