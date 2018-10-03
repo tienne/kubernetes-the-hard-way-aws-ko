@@ -2,7 +2,7 @@
 
 ## Amazon Web Services
 
-이 가이드에서는 [Amazon Web Services](https://aws.amazon.com/)를 활용하여 Kubernetes 클러스터를 처음부터 부트 스트랩하는 데 필요한 컴퓨팅 인프라의 프로비저닝을 간소화합니다. 이 작업을 완료하는 데 걸리는 24 시간 동안 약 2달러 미만의 비용이 소요됩니다.
+이 가이드에서는 [Amazon Web Services](https://aws.amazon.com/)를 활용하여 Kubernetes 클러스터를 처음부터 부트 스트랩하는 데 필요한 컴퓨팅 인프라 프로비저닝을 간소화합니다. 이 작업을 완료하는 데 걸리는 24 시간 동안 약 2달러 미만의 비용이 소요됩니다.
 
 > 해당 가이드에서 필요한 컴퓨팅 리소스는 Amazon Web Services 프리 티어를 초과합니다. 원하지 않는 비용이 발생하지 않도록 학습이 끝나면 리소스를 정리하시길 바랍니다.
 

@@ -40,8 +40,8 @@
 
 * [필수사항](docs/01-prerequisites.md)
 * [Client 용 도구들 설치](docs/02-client-tools.md)
-* [Provisioning Compute Resources](docs/03-compute-resources.md)
-* [Provisioning the CA and Generating TLS Certificates](docs/04-certificate-authority.md)
+* [서버 준비](docs/03-compute-resources.md)
+* [인증기관 준비 및 TLS 인증 생성](docs/04-certificate-authority.md)
 * [Kubernetes 인증 처리를 위한 설정 파일 생성](docs/05-kubernetes-configuration-files.md)
 * [데이터 암호화 설정 및 키 생성](docs/06-data-encryption-keys.md)
 * [etcd Cluster 준비](docs/07-bootstrapping-etcd.md)
@@ -51,4 +51,4 @@
 * [Provisioning Pod Network Routes](docs/11-pod-network-routes.md)
 * [Deploying the DNS Cluster Add-on](docs/12-dns-addon.md)
 * [Smoke Test](docs/13-smoke-test.md)
-* [Cleaning Up](docs/14-cleanup.md)
+* [리소스 정리](docs/14-cleanup.md)

@@ -8,7 +8,7 @@ Kubernetes 는 클러스터의 상태, 응용 프로그램 구성 및 비공개 
 
 암호화 키를 생성합니다.
 
-```
+```bash
 ENCRYPTION_KEY=$(head -c 32 /dev/urandom | base64)
 ```
 
@@ -16,7 +16,7 @@ ENCRYPTION_KEY=$(head -c 32 /dev/urandom | base64)
 
 암호화 설정 파일인 `encryption-config.yaml` 를 생성합니다.
 
-```
+```bash
 cat > encryption-config.yaml <<EOF
 kind: EncryptionConfig
 apiVersion: v1
@@ -34,7 +34,7 @@ EOF
 
 생성된 암호화 설정 파일 `encryption-config.yaml` 를 각 마스터 노드 인스턴스에 복사합니다.
 
-```
+```bash
 for instance in master-0 master-1 master-2; do
   external_ip=$(aws ec2 describe-instances \
     --filters "Name=tag:Name,Values=${instance}" \
@@ -44,4 +44,4 @@ for instance in master-0 master-1 master-2; do
 done
 ```
 
-Next: [etcd 클러스터 준비](07-bootstrapping-etcd.md)
+다음: [etcd 클러스터 준비](07-bootstrapping-etcd.md)

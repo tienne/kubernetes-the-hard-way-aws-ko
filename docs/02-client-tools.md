@@ -121,4 +121,4 @@ kubectl version --client
 Client Version: version.Info{Major:"1", Minor:"11", GitVersion:"v1.11.3", GitCommit:"a4529464e4629c21224b3d52edfe0ea91b072862", GitTreeState:"clean", BuildDate:"2018-09-10T11:44:36Z", GoVersion:"go1.11", Compiler:"gc", Platform:"darwin/amd64"}
 ```
 
-다음: [Provisioning Compute Resources](03-compute-resources.md)
+다음: [서버 준비](03-compute-resources.md)

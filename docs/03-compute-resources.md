@@ -185,4 +185,4 @@ for i in 0 1 2; do
 done
 ```
 
-다음: [Certificate Authority](04-certificate-authority.md)
+다음: [인증기관](04-certificate-authority.md)

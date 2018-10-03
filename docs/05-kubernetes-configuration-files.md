@@ -12,7 +12,7 @@
 
 이전 단계에서 등록한 `kubernetes-the-hard-way` DNS address를 찾습니다.
 
-```
+```bash
 KUBERNETES_PUBLIC_ADDRESS=$(aws elbv2 describe-load-balancers \
   --load-balancer-arns ${LOAD_BALANCER_ARN} \
   --output text --query 'LoadBalancers[0].DNSName')
@@ -24,7 +24,7 @@ Kublet에 대한 kubeconfig 파일을 생성할 때 Kubelet의 Node 이름과 �
  
 각 Worker 노드에 해당하는 kubeconfig 파일을 생성합니다. 
 
-```
+```bash
 for instance in worker-0 worker-1 worker-2; do
   kubectl config set-cluster kubernetes-the-hard-way \
     --certificate-authority=ca.pem \
@@ -59,7 +59,7 @@ worker-2.kubeconfig
 
 `kube-proxy` 서비스를 위한 kubeconfig 파일을 생성합니다.
 
-```
+```bash
 kubectl config set-cluster kubernetes-the-hard-way \
   --certificate-authority=ca.pem \
   --embed-certs=true \
@@ -90,7 +90,7 @@ kube-proxy.kubeconfig
 
 `kube-controller-manager` 서비스를 위한 kubeconfig 파일을 생성합니다.
 
-```
+```bash
 kubectl config set-cluster kubernetes-the-hard-way \
   --certificate-authority=ca.pem \
   --embed-certs=true \
@@ -122,7 +122,7 @@ kube-controller-manager.kubeconfig
 
 `kube-scheduler` 서비스를 위한 kubeconfig 파일을 생성합니다.
 
-```
+```bash
 kubectl config set-cluster kubernetes-the-hard-way \
   --certificate-authority=ca.pem \
   --embed-certs=true \
@@ -153,7 +153,7 @@ kube-scheduler.kubeconfig
 
 `admin` 유저를 위한 kubeconfig 파일을 생성합니다.
 
-```
+```bash
 kubectl config set-cluster kubernetes-the-hard-way \
   --certificate-authority=ca.pem \
   --embed-certs=true \
@@ -187,7 +187,7 @@ admin.kubeconfig
 
 `kubelet` 과 `kube-proxy` kubeconfig 파일들을 Worker 노드 인스턴스에 복사하여 넣어둡니다. 
 
-```
+```bash
 for instance in worker-0 worker-1 worker-2; do
   external_ip=$(aws ec2 describe-instances \
     --filters "Name=tag:Name,Values=${instance}" \
@@ -200,7 +200,7 @@ done
 
 `kube-controller-manager` 와 `kube-scheduler` kubeconfig 파일들을 Master 노드 인스턴스에 복사하여 넣어둡니다.
 
-```
+```bash
 for instance in master-0 master-1 master-2; do
   external_ip=$(aws ec2 describe-instances \
     --filters "Name=tag:Name,Values=${instance}" \
