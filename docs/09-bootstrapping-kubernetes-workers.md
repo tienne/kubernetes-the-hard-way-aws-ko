@@ -1,12 +1,12 @@
-# Bootstrapping the Kubernetes Worker Nodes
+# 쿠버네티스 Worker 노드 준비
 
-In this lab you will bootstrap three Kubernetes worker nodes. The following components will be installed on each node: [runc](https://github.com/opencontainers/runc), [gVisor](https://github.com/google/gvisor), [container networking plugins](https://github.com/containernetworking/cni), [containerd](https://github.com/containerd/containerd), [kubelet](https://kubernetes.io/docs/admin/kubelet), and [kube-proxy](https://kubernetes.io/docs/concepts/cluster-administration/proxies).
+이번에는 쿠버네티스 Worker 노드들을 준비하겠습니다. 각 Worker 노드들에는 [runc](https://github.com/opencontainers/runc), [gVisor](https://github.com/google/gvisor), [container networking plugins](https://github.com/containernetworking/cni), [containerd](https://github.com/containerd/containerd), [kubelet](https://kubernetes.io/docs/admin/kubelet), 그리고 [kube-proxy](https://kubernetes.io/docs/concepts/cluster-administration/proxies) 등이 설치됩니다.
 
-## Prerequisites
+## 준비사항
 
-The commands in this lab must be run on each worker instance: `worker-0`, `worker-1`, and `worker-2`. Login to each worker instance using the `ssh` command. Example:
+아래의 명령어 부터는 Worker instance 인 `worker-0`, `worker-1`, 그리고 `worker-2` 에서 실행되어야합니다. 아래의 예시와 같이 `ssh` 접속하기 위한 IP 를 확인합니다.
 
-```
+```bash
 for instance in worker-0 worker-1 worker-2; do
   external_ip=$(aws ec2 describe-instances \
     --filters "Name=tag:Name,Values=${instance}" \
@@ -16,32 +16,30 @@ for instance in worker-0 worker-1 worker-2; do
 done
 ```
 
-Now ssh into each one of the IP addresses received in last step
+이제 위의 명령어를 통해 출력된 IP를 이용하여 ssh 접속을 합니다.
 
+```bash
+ssh -i kubernetes.id_rsa ubuntu@${위에 출력된 IP1}
+ssh -i kubernetes.id_rsa ubuntu@${위에 출력된 IP2}
+ssh -i kubernetes.id_rsa ubuntu@${위에 출력된 IP3}
 ```
-ssh -i kubernetes.id_rsa ubuntu@${IP1 received in last step}
-ssh -i kubernetes.id_rsa ubuntu@${IP2 received in last step}
-ssh -i kubernetes.id_rsa ubuntu@${IP3 received in last step}
-```
 
-### Running commands in parallel with tmux
+> 저는 3대의 인스턴스를 동시에 명령을 실행하기 위해 [iterm2](https://www.iterm2.com/) 를 이용했습니다.
 
-[tmux](https://github.com/tmux/tmux/wiki) can be used to run commands on multiple compute instances at the same time. See the [Running commands in parallel with tmux](01-prerequisites.md#running-commands-in-parallel-with-tmux) section in the Prerequisites lab.
+## Kubernetes Worker 노드 구성 
 
-## Provisioning a Kubernetes Worker Node
+의존성을 가지고 있는 ubuntu 패키지들을 설치합니다.
 
-Install the OS dependencies:
-
-```
+```bash
 sudo apt-get update
 sudo apt-get -y install socat conntrack ipset
 ```
 
-> The socat binary enables support for the `kubectl port-forward` command.
+> socat 바이너리는 `kubectl port-forward` 명령을 지원합니다.
 
-### Download and Install Worker Binaries
+### Worker 바이너리 다운로드 및 설치
 
-```
+```bash
 wget -q --show-progress --https-only --timestamping \
   https://github.com/kubernetes-incubator/cri-tools/releases/download/v1.11.1/crictl-v1.11.1-linux-amd64.tar.gz \
   https://storage.googleapis.com/kubernetes-the-hard-way/runsc \
@@ -53,9 +51,9 @@ wget -q --show-progress --https-only --timestamping \
   https://storage.googleapis.com/kubernetes-release/release/v1.11.2/bin/linux/amd64/kubelet
 ```
 
-Create the installation directories:
+설치할 디렉토리를 생성합니다.
 
-```
+```bash
 sudo mkdir -p \
   /etc/cni/net.d \
   /opt/cni/bin \
@@ -65,9 +63,9 @@ sudo mkdir -p \
   /var/run/kubernetes
 ```
 
-Install the worker binaries:
+그후 worker 바이너리를 설치합니다.
 
-```
+```bash
 chmod +x kubectl kube-proxy kubelet runc.amd64 runsc
 sudo mv runc.amd64 runc
 sudo mv kubectl kube-proxy kubelet runc runsc /usr/local/bin/
@@ -76,19 +74,19 @@ sudo tar -xvf cni-plugins-amd64-v0.7.1.tgz -C /opt/cni/bin/
 sudo tar -xvf containerd-1.2.0-beta.2.linux-amd64.tar.gz -C /
 ```
 
-### Configure CNI Networking
+### CNI Networking 설정
 
-Retrieve the Pod CIDR range for the current compute instance:
+현재 인스턴스에 대한 포드 CIDR 범위를 조회합니다.
 
-```
+```bash
 POD_CIDR=$(curl -s http://169.254.169.254/latest/user-data/ \
   | tr "|" "\n" | grep "^pod-cidr" | cut -d"=" -f2)
 echo "${POD_CIDR}"
 ```
 
-Create the `bridge` network configuration file:
+`bridge` network 설정 파일을 생성합니다.
 
-```
+```bash
 cat <<EOF | sudo tee /etc/cni/net.d/10-bridge.conf
 {
     "cniVersion": "0.3.1",
@@ -108,9 +106,9 @@ cat <<EOF | sudo tee /etc/cni/net.d/10-bridge.conf
 EOF
 ```
 
-Create the `loopback` network configuration file:
+`loopback` network 설정 파일을 생성합니다.
 
-```
+```bash
 cat <<EOF | sudo tee /etc/cni/net.d/99-loopback.conf
 {
     "cniVersion": "0.3.1",
@@ -119,15 +117,15 @@ cat <<EOF | sudo tee /etc/cni/net.d/99-loopback.conf
 EOF
 ```
 
-### Configure containerd
+### containerd 설정
 
-Create the `containerd` configuration file:
+`containerd` 디렉토리 및 설정 파일을 생성합니다.
 
-```
+```bash
 sudo mkdir -p /etc/containerd/
 ```
 
-```
+```bash
 cat << EOF | sudo tee /etc/containerd/config.toml
 [plugins]
   [plugins.cri.containerd]
@@ -143,11 +141,11 @@ cat << EOF | sudo tee /etc/containerd/config.toml
 EOF
 ```
 
-> Untrusted workloads will be run using the gVisor (runsc) runtime.
+> 신뢰할 수 없는 워크로드는 gVisor(runsc) 런타임으로 실행됩니다.
 
-Create the `containerd.service` systemd unit file:
+`containerd.service` systemd 설정 파일을 생성합니다.
 
-```
+```bash
 cat <<EOF | sudo tee /etc/systemd/system/containerd.service
 [Unit]
 Description=containerd container runtime
@@ -171,9 +169,9 @@ WantedBy=multi-user.target
 EOF
 ```
 
-### Configure the Kubelet
+### Kubelet 설정
 
-```
+```bash
 WORKER_NAME=$(curl -s http://169.254.169.254/latest/user-data/ \
 | tr "|" "\n" | grep "^name" | cut -d"=" -f2)
 echo "${WORKER_NAME}"
@@ -183,9 +181,9 @@ sudo mv ${WORKER_NAME}.kubeconfig /var/lib/kubelet/kubeconfig
 sudo mv ca.pem /var/lib/kubernetes/
 ```
 
-Create the `kubelet-config.yaml` configuration file:
+`kubelet-config.yaml` 설정 파일을 생성합니다.
 
-```
+```bash
 cat <<EOF | sudo tee /var/lib/kubelet/kubelet-config.yaml
 kind: KubeletConfiguration
 apiVersion: kubelet.config.k8s.io/v1beta1
@@ -208,9 +206,9 @@ tlsPrivateKeyFile: "/var/lib/kubelet/${WORKER_NAME}-key.pem"
 EOF
 ```
 
-Create the `kubelet.service` systemd unit file:
+`kubelet.service` systemd 설정 파일을 생성합니다.
 
-```
+```bash
 cat <<EOF | sudo tee /etc/systemd/system/kubelet.service
 [Unit]
 Description=Kubernetes Kubelet
@@ -236,15 +234,15 @@ WantedBy=multi-user.target
 EOF
 ```
 
-### Configure the Kubernetes Proxy
+### Kubernetes Proxy 설정
 
-```
+```bash
 sudo mv kube-proxy.kubeconfig /var/lib/kube-proxy/kubeconfig
 ```
 
-Create the `kube-proxy-config.yaml` configuration file:
+`kube-proxy-config.yaml` 설정 파일을 생성합니다.
 
-```
+```bash
 cat <<EOF | sudo tee /var/lib/kube-proxy/kube-proxy-config.yaml
 kind: KubeProxyConfiguration
 apiVersion: kubeproxy.config.k8s.io/v1alpha1
@@ -255,9 +253,9 @@ clusterCIDR: "10.200.0.0/16"
 EOF
 ```
 
-Create the `kube-proxy.service` systemd unit file:
+`kube-proxy.service` systemd 설정 파일을 생성합니다.
 
-```
+```bash
 cat <<EOF | sudo tee /etc/systemd/system/kube-proxy.service
 [Unit]
 Description=Kubernetes Kube Proxy
@@ -274,25 +272,25 @@ WantedBy=multi-user.target
 EOF
 ```
 
-### Start the Worker Services
+### Worker 서비스들 실행
 
-```
+```bash
 sudo systemctl daemon-reload
 sudo systemctl enable containerd kubelet kube-proxy
 sudo systemctl start containerd kubelet kube-proxy
 ```
 
-> Remember to run the above commands on each worker node: `worker-0`, `worker-1`, and `worker-2`.
+> 각 Worker node 인스턴스인 `worker-0`, `worker-1`, 그리고 `worker-2` 에서 실행해야하는걸 잊지마세요.
 
-## Verification
+## 실행 확인
 
-> The compute instances created in this tutorial will not have permission to complete this section. Run the following commands from the same machine used to create the compute instances.
+> worker 노드들이 실행되었는지 확인을 위해서는 master node 에서 확인이 가능합니다. 마스터0 인스턴스에 접속하여 아래의 절차를 통해 확인합니다. 
 
-List the registered Kubernetes nodes:
+등록된 쿠버네티스 노드 리스트를 확인합니다.
 
-```
+```bash
 external_ip=$(aws ec2 describe-instances \
-    --filters "Name=tag:Name,Values=controller-0" \
+    --filters "Name=tag:Name,Values=master-0" \
     --output text --query 'Reservations[].Instances[].PublicIpAddress')
 
 ssh -i kubernetes.id_rsa ubuntu@${external_ip}
@@ -300,7 +298,7 @@ ssh -i kubernetes.id_rsa ubuntu@${external_ip}
 kubectl get nodes --kubeconfig admin.kubeconfig
 ```
 
-> output
+> 실행결과
 
 ```
 NAME             STATUS    ROLES     AGE       VERSION
@@ -309,4 +307,4 @@ ip-10-240-0-21   Ready     <none>    25s       v1.11.2
 ip-10-240-0-22   Ready     <none>    25s       v1.11.2
 ```
 
-Next: [Configuring kubectl for Remote Access](10-configuring-kubectl.md)
+다음: [원격 접근을 위한 kubectl 설정](10-configuring-kubectl.md)

@@ -27,7 +27,7 @@ ssh -i kubernetes.id_rsa ubuntu@${위에 출력된 IP3}
 
 > 저는 3대의 인스턴스를 동시에 명령을 실행하기 위해 [iterm2](https://www.iterm2.com/) 를 이용했습니다.
 
-## 쿠버네티스 Control Plane 구
+## 쿠버네티스 Control Plane 구성
 
 쿠버네티스 관련 설정들을 저장할 디렉토리를 생성합니다.
 
