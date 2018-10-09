@@ -64,15 +64,15 @@ sudo mv ca.pem ca-key.pem kubernetes-key.pem kubernetes.pem \
   encryption-config.yaml /var/lib/kubernetes/
 ```
 
-The instance internal IP address will be used to advertise the API Server to members of the cluster. Retrieve the internal IP address for the current compute instance:
+인스턴스 내부 아이피 주소는 API 서버를 클러스터들에게 알려주기 위해 사용됩니다. 현재 인스턴스 내부 아이피를 가져옵니다. 
 
-```
+```bash
 INTERNAL_IP=$(curl -s http://169.254.169.254/latest/meta-data/local-ipv4)
 ```
 
-Create the `kube-apiserver.service` systemd unit file:
+`kube-apiserver.service` ststemd 파일을 생성합니다.
 
-```
+```bash
 cat <<EOF | sudo tee /etc/systemd/system/kube-apiserver.service
 [Unit]
 Description=Kubernetes API Server
@@ -117,17 +117,17 @@ WantedBy=multi-user.target
 EOF
 ```
 
-### Configure the Kubernetes Controller Manager
+### 쿠버네티스 Controller Manager 설정
 
-Move the `kube-controller-manager` kubeconfig into place:
+mv 명령어를 이용해서 `kube-controller-manager` kubeconfig 파일를 옴겨줍니다.
 
-```
+```bash
 sudo mv kube-controller-manager.kubeconfig /var/lib/kubernetes/
 ```
 
-Create the `kube-controller-manager.service` systemd unit file:
+`kube-controller-manager.service` systemd 파일을 생성합니다.
 
-```
+```bash
 cat <<EOF | sudo tee /etc/systemd/system/kube-controller-manager.service
 [Unit]
 Description=Kubernetes Controller Manager
@@ -155,17 +155,17 @@ WantedBy=multi-user.target
 EOF
 ```
 
-### Configure the Kubernetes Scheduler
+### 쿠버네티스 Scheduler 설정
 
-Move the `kube-scheduler` kubeconfig into place:
+mv 명령어를 이용해서 `kube-scheduler` kubeconfig 파일을 옴겨줍니다.
 
-```
+```bash
 sudo mv kube-scheduler.kubeconfig /var/lib/kubernetes/
 ```
 
-Create the `kube-scheduler.yaml` configuration file:
+`kube-scheduler.yaml` 설정 파일을 아래와 같이 생성합니다.
 
-```
+```bash
 cat <<EOF | sudo tee /etc/kubernetes/config/kube-scheduler.yaml
 apiVersion: componentconfig/v1alpha1
 kind: KubeSchedulerConfiguration
@@ -176,9 +176,9 @@ leaderElection:
 EOF
 ```
 
-Create the `kube-scheduler.service` systemd unit file:
+`kube-scheduler.service` systemd 파일을 생서합니다.
 
-```
+```bash
 cat <<EOF | sudo tee /etc/systemd/system/kube-scheduler.service
 [Unit]
 Description=Kubernetes Scheduler
@@ -196,22 +196,23 @@ WantedBy=multi-user.target
 EOF
 ```
 
-### Start the Controller Services
+### Controller Services 실행
 
-```
+```bash
 sudo systemctl daemon-reload
 sudo systemctl enable kube-apiserver kube-controller-manager kube-scheduler
 sudo systemctl start kube-apiserver kube-controller-manager kube-scheduler
 ```
 
-> Allow up to 30 seconds for the Kubernetes API Server to fully initialize.
+> 쿠버네티스 API 서버가 초기화되는데 약 30초 정도 소요됩니다.
 
-Now check status of your controller components
-```sh
+이제 실행 상태들을 체크합니다.
+
+```bash
 kubectl get componentstatuses
 ```
 
-Output: 
+실행결과: 
 ```
 NAME                 STATUS    MESSAGE             ERROR
 controller-manager   Healthy   ok
@@ -220,15 +221,15 @@ etcd-0               Healthy   {"health":"true"}
 etcd-2               Healthy   {"health":"true"}
 etcd-1               Healthy   {"health":"true"}
 ```
-Yay !!! - Controllers are up
+컨트롤러들이 위와 같이 정상적으로 실행되었습니다.
 
-## RBAC for Kubelet Authorization
+## Kubelet 인증을 위한 RBAC 
 
-In this section you will configure RBAC permissions to allow the Kubernetes API Server to access the Kubelet API on each worker node. Access to the Kubelet API is required for retrieving metrics, logs, and executing commands in pods.
+이제 Kubernetes API 서버가 각 Worker 노드 Kubelet 에 액세스 할 수 있도록 RBAC 권한을 구성하도록 하겠습니다. Pod에서 메트릭, 로그 및 실행 명령을 검색하려면 Kubelet API에 액세스해야합니다. 
 
-> This tutorial sets the Kubelet `--authorization-mode` flag to `Webhook`. Webhook mode uses the [SubjectAccessReview](https://kubernetes.io/docs/admin/authorization/#checking-api-access) API to determine authorization.
+> 이 가이드에서는 Kubelet `--authorization-mode` 설정을 `Webhook` 으로 설정합니다. Webhook 모드는 [SubjectAccessReview](https://kubernetes.io/docs/admin/authorization/#checking-api-access) API 를 이용하여 권한설정을 합니다.
 
-```
+```bash
 external_ip=$(aws ec2 describe-instances \
     --filters "Name=tag:Name,Values=controller-0" \
     --output text --query 'Reservations[].Instances[].PublicIpAddress')
@@ -236,9 +237,9 @@ external_ip=$(aws ec2 describe-instances \
 ssh -i kubernetes.id_rsa ubuntu@${external_ip}
 ```
 
-Create the `system:kube-apiserver-to-kubelet` [ClusterRole](https://kubernetes.io/docs/admin/authorization/rbac/#role-and-clusterrole) with permissions to access the Kubelet API and perform most common tasks associated with managing pods:
+Kubelet API 에 접근 권한이 있는 `system:kube-apiserver-to-kubelet` [ClusterRole](https://kubernetes.io/docs/admin/authorization/rbac/#role-and-clusterrole) 을 생성을 합니다.  
 
-```
+```bash
 cat <<EOF | kubectl apply --kubeconfig admin.kubeconfig -f -
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRole
@@ -262,11 +263,11 @@ rules:
 EOF
 ```
 
-The Kubernetes API Server authenticates to the Kubelet as the `kubernetes` user using the client certificate as defined by the `--kubelet-client-certificate` flag.
+쿠버네티스 API 서버는 `--kubelet-client-certificate` 옵션으로 정의 된 클라이언트 인증서를 사용하여 Kubelet 에 `kubernetes` 사용자로 인증합니다.
 
-Bind the `system:kube-apiserver-to-kubelet` ClusterRole to the `kubernetes` user:
+`kubernetes` 유저에 `system:kube-apiserver-to-kubelet` ClusterRole 를 적용시킵니다.
 
-```
+```bash
 cat <<EOF | kubectl apply --kubeconfig admin.kubeconfig -f -
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRoleBinding
@@ -284,24 +285,23 @@ subjects:
 EOF
 ```
 
-### Verification of cluster public endpoint - From your laptop
+### 개인 PC 에서 클러스터 공개 endpoint 확인
 
-Run this command on the machine from where you started setup (e.g. Your personal laptop)
-Retrieve the `kubernetes-the-hard-way` Load Balancer address:
+이제 개인 노트북 혹은 데스크탑에서 아래의 명령어를 실행하여 `kubernetes-the-hard-way` 로드 밸런서 주소를 조회합니다. 
 
-```
+```bash
 KUBERNETES_PUBLIC_ADDRESS=$(aws elbv2 describe-load-balancers \
   --load-balancer-arns ${LOAD_BALANCER_ARN} \
   --output text --query 'LoadBalancers[].DNSName')
 ```
 
-Make a HTTP request for the Kubernetes version info:
+HTTP 요청으로 Kubernetes 버전 정보를 확인합니다.
 
-```
+```bash
 curl --cacert ca.pem https://${KUBERNETES_PUBLIC_ADDRESS}:6443/version
 ```
 
-> output
+> 실행결과
 
 ```
 {
@@ -317,4 +317,4 @@ curl --cacert ca.pem https://${KUBERNETES_PUBLIC_ADDRESS}:6443/version
 }
 ```
 
-Next: [Bootstrapping the Kubernetes Worker Nodes](09-bootstrapping-kubernetes-workers.md)
+다음: [Kubernetes Worker 노드 준비](09-bootstrapping-kubernetes-workers.md)
