@@ -307,4 +307,4 @@ ip-10-240-0-21   Ready     <none>    25s       v1.11.2
 ip-10-240-0-22   Ready     <none>    25s       v1.11.2
 ```
 
-다음: [원격 접근을 위한 kubectl 설정](10-configuring-kubectl.md)
+다음: [원격 제어를 위한 kubectl 설정](10-configuring-kubectl.md)
